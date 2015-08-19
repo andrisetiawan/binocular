@@ -1,18 +1,21 @@
 require "net/https"
 require "uri"
+require "json"
 require "binocular/version"
 
 module Binocular
   class Bin
     attr_accessor :settings, :bin_number
+    attr_reader :info
+    DEFAULT_SETTINGS = { proxy_host: nil, proxy_port: nil }
 
     def self.info bin_number
-      default_settings = { proxy_host: nil, proxy_port: nil }
-      self.new(default_settings).info bin_number
+      self.new(bin_number).fetch_info
     end
 
-    def initialize(settings)
+    def initialize(bin_number, settings=DEFAULT_SETTINGS)
       self.settings = settings
+      self.bin_number = bin_number
     end
 
     def proxy_host
@@ -27,8 +30,8 @@ module Binocular
       self.settings[:timeout] ? self.settings[:timeout] : 20
     end
 
-    def info(bin_number)
-      uri = URI.parse("http://www.binlist.net/json/#{bin_number}")
+    def fetch_info
+      uri = URI.parse("http://www.binlist.net/json/#{self.bin_number}")
 
       http = Net::HTTP.new(uri.host, uri.port, self.proxy_host, self.proxy_port)
       http.use_ssl      = false
@@ -37,7 +40,7 @@ module Binocular
 
       request = Net::HTTP::Get.new(uri.request_uri)
       response = http.request(request)
-      puts response.body
+      @info = JSON.parse response.body
     end
 
   end

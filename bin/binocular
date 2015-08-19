@@ -27,7 +27,7 @@ def instruction
 end
 
 if (ARGV.length == 1) && (valid? ARGV[0])
-  Binocular::Bin.info ARGV[0]
+  puts Binocular::Bin.info ARGV[0]
 else
   puts instruction
   exit
