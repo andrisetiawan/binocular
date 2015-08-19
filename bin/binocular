@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require "binocular"
+
+def numeric? val
+  val.to_i.to_s == val.to_s
+rescue
+  false
+end
+
+def valid_length? val
+  val.size == 6
+end
+
+def valid? val
+  (numeric? val) && (valid_length? val)
+end
+
+def instruction
+  <<-INSTRUCTION
+
+  Invalid arguments.
+  Usage: binocular <(6-length numeric) bin number>\n
+  Sample: binocular 431940\n
+
+  INSTRUCTION
+end
+
+if (ARGV.length == 1) && (valid? ARGV[0])
+  Binocular::Bin.info ARGV[0]
+else
+  puts instruction
+  exit
+end
+
